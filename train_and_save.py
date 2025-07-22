@@ -22,7 +22,7 @@ def download_data(symbol, period="5y", retries=3, delay=5):
             print(f"❌ Download error: {e}")
         time.sleep(delay)
     raise ValueError("Failed to fetch data after multiple attempts.")
-nifty = download_data("^NSEI.BO", "5y")
+nifty = download_data("NIFTYBEES.NS", "5y")
 # getting the features that are there already and 
 # Base Features
 nifty['Prev_Close'] = nifty['Close'].shift(1)
