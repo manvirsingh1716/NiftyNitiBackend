@@ -4,11 +4,25 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import joblib
+import time
 
 # Fetch latest NIFTY50 data
 # Download NIFTY50 data (last 5 years)
-nifty = yf.download("^NSEI", period="5y", interval="1d")
-
+def download_data(symbol, period="5y", retries=3, delay=5):
+    for i in range(retries):
+        try:
+            print(f"Attempt {i+1} to download data...")
+            data = yf.download(symbol, period=period)
+            if not data.empty:
+                print("✅ Data fetched successfully")
+                return data
+            else:
+                print("⚠️ Empty data, retrying...")
+        except Exception as e:
+            print(f"❌ Download error: {e}")
+        time.sleep(delay)
+    raise ValueError("Failed to fetch data after multiple attempts.")
+nifty = download_data("^NSEI", "5y")
 # getting the features that are there already and 
 # Base Features
 nifty['Prev_Close'] = nifty['Close'].shift(1)
@@ -51,5 +65,5 @@ model = LinearRegression()
 model.fit(X_train, y_train)
 
 # Save model and features
-joblib.dump(model, 'backend/nifty_lr_model.pkl')
-joblib.dump(X.columns.tolist(), 'backend/features.pkl')
+joblib.dump(model, 'nifty_lr_model.pkl')
+joblib.dump(X.columns.tolist(), 'features.pkl')
