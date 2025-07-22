@@ -1,0 +1,38 @@
+name: Daily Model Retrain
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Retrain model
+        run: |
+          python backend/train_and_save.py
+
+      - name: Commit and push model
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add backend/nifty_lr_model.pkl backend/features.pkl
+          git diff --cached --quiet || (git commit -m "🔁 Auto retrained model" && git push)
+      - name: Touch backend/app.py to trigger redeploy
+        run: |
+          echo "# retrain trigger" >> backend/app.py
+

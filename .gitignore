@@ -1,0 +1,15 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore environment variable files (only if you're setting them via Render or elsewhere)
+.env
+
+# Ignore system or IDE junk
+.DS_Store
+*.log
+*.sqlite
