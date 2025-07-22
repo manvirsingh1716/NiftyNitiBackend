@@ -20,19 +20,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r backend/requirements.txt
+          pip install -r requirements.txt
 
       - name: Retrain model
         run: |
-          python backend/train_and_save.py
+          python train_and_save.py
 
       - name: Commit and push model
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add backend/nifty_lr_model.pkl backend/features.pkl
+          git add nifty_lr_model.pkl features.pkl
           git diff --cached --quiet || (git commit -m "🔁 Auto retrained model" && git push)
-      - name: Touch backend/app.py to trigger redeploy
+      - name: Touch app.py to trigger redeploy
         run: |
-          echo "# retrain trigger" >> backend/app.py
+          echo "# retrain trigger" >> app.py
 
