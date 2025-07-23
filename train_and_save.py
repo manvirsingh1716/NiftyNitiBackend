@@ -5,24 +5,21 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import joblib
 import time
-
+import os
 # Fetch latest NIFTY50 data
 # Download NIFTY50 data (last 5 years)
-def download_data(symbol, period="5y", retries=3, delay=5):
-    for i in range(retries):
-        try:
-            print(f"Attempt {i+1} to download data...")
-            data = yf.download(symbol, period=period)
-            if not data.empty:
-                print("✅ Data fetched successfully")
-                return data
-            else:
-                print("⚠️ Empty data, retrying...")
-        except Exception as e:
-            print(f"❌ Download error: {e}")
-        time.sleep(delay)
-    raise ValueError("Failed to fetch data after multiple attempts.")
-nifty = download_data("NIFTYBEES.NS", "5y")
+import requests
+
+def fetch_alpha_vantage(symbol, apikey):
+    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={apikey}'
+    r = requests.get(url)
+    data = r.json()
+    df = pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
+    df = df.astype(float)
+    df = df.sort_index()
+    return df
+
+nifty = fetch_alpha_vantage('NSEI', os.getenv("ALPHA_VANTAGE_API_KEY"))
 # getting the features that are there already and 
 # Base Features
 nifty['Prev_Close'] = nifty['Close'].shift(1)
