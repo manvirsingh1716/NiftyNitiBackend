@@ -17,9 +17,17 @@ def fetch_alpha_vantage(symbol, apikey):
     df = pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
     df = df.astype(float)
     df = df.sort_index()
+    df.rename(columns={
+    '1. open': 'Open',
+    '2. high': 'High',
+    '3. low': 'Low',
+    '4. close': 'Close',
+    '5. volume': 'Volume'
+}, inplace=True)
+
     return df
 
-nifty = fetch_alpha_vantage('NSEI', os.getenv("ALPHA_VANTAGE_API_KEY"))
+nifty = fetch_alpha_vantage('NIFTYBEES.BSE', "5TWY0FWPISH2SOWL")
 # getting the features that are there already and 
 # Base Features
 nifty['Prev_Close'] = nifty['Close'].shift(1)
