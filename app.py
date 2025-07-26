@@ -3,12 +3,12 @@ import joblib
 import numpy as np
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 CORS(app)
 
 model = joblib.load("nifty_lr_model.pkl")
 raw_features = joblib.load("features.pkl")
-# features = [f[0] for f in raw_features]
 
 
 @app.route("/predict", methods=["POST"])
@@ -24,6 +24,10 @@ def predict():
 @app.route("/features", methods=["GET"])
 def get_features():
     return jsonify({"features": raw_features})
-
+@app.route("/weights", methods=["GET"])
+def get_weights():
+    coefficients = model.coef_
+    intercept = model.intercept_
+    return jsonify({"weights": coefficients.tolist(), "intercept": intercept})
 if __name__ == "__main__":
     app.run(debug=True)
